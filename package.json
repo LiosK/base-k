@@ -1,0 +1,30 @@
+{
+  "name": "base-k",
+  "version": "0.1.0",
+  "description": "Base-k binary-to-text encoder-decoder",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepare": "npm run clean && npm run build && npm test",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiosK/base-k.git"
+  },
+  "author": "LiosK <contact@mail.liosk.net>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/LiosK/base-k/issues"
+  },
+  "homepage": "https://github.com/LiosK/base-k#readme",
+  "devDependencies": {
+    "mocha": "^9.2.1",
+    "typescript": "^4.6.2"
+  }
+}
