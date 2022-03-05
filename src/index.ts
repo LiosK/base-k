@@ -47,14 +47,26 @@ export class BaseK {
 
   /** Encodes a byte array to text. */
   encode(bytes: Uint8Array): string {
-    const len = Math.ceil((bytes.length * 8) / this.log2Radix);
-    const out = new Uint8Array(len);
-    for (let i = 0; i < bytes.length; i++) {
-      let carry = bytes[i];
-      for (let j = len - 1; j >= 0; j--) {
-        carry += out[j] * 0x100;
+    const outSize = Math.ceil((bytes.length * 8) / this.log2Radix);
+    const out = new Uint8Array(outSize);
+    for (let i = 0; i < bytes.length; ) {
+      // Reset carry to input (read multiple bytes for optimization)
+      let carry = 0;
+      let ub = 1; // Set to 256 ** number of read bytes
+      while (ub < 0x1_0000_0000 && i < bytes.length) {
+        carry = carry * 256 + bytes[i++];
+        ub *= 256;
+      }
+
+      for (let j = outSize - 1; j >= 0; j--) {
+        carry += out[j] * ub;
         out[j] = carry % this.radix;
         carry = Math.trunc(carry / this.radix);
+      }
+
+      if (carry !== 0) {
+        // TODO add optional param that specifies the size of output array
+        throw new RangeError("assertion failed: output array too short");
       }
     }
 
@@ -67,17 +79,30 @@ export class BaseK {
 
   /** Decodes text to a byte array. */
   decode(text: string): Uint8Array {
-    const len = Math.ceil((text.length / 8) * this.log2Radix);
-    const out = new Uint8Array(len);
-    for (let i = 0; i < text.length; i++) {
-      let carry = this.decodeMap[text.charCodeAt(i)] ?? 0xff;
-      if (carry >= this.radix) {
-        throw new SyntaxError("invalid character");
+    const outSize = Math.ceil((text.length / 8) * this.log2Radix);
+    const out = new Uint8Array(outSize);
+    for (let i = 0; i < text.length; ) {
+      // Reset carry to input (read multiple digits for optimization)
+      let carry = 0;
+      let ub = 1; // Set to this.radix ** number of read digits
+      while (ub < 0x1_0000_0000 && i < text.length) {
+        const c = this.decodeMap[text.charCodeAt(i++)] ?? 0xff;
+        if (c >= this.radix) {
+          throw new SyntaxError("invalid character");
+        }
+        carry = carry * this.radix + c;
+        ub *= this.radix;
       }
-      for (let j = len - 1; j >= 0; j--) {
-        carry += out[j] * this.radix;
-        out[j] = carry % 0x100;
-        carry = Math.trunc(carry / 0x100);
+
+      for (let j = outSize - 1; j >= 0; j--) {
+        carry += out[j] * ub;
+        out[j] = carry % 256;
+        carry = Math.trunc(carry / 256);
+      }
+
+      if (carry !== 0) {
+        // TODO add optional param that specifies the size of output array
+        throw new RangeError("assertion failed: output array too short");
       }
     }
 
