@@ -65,7 +65,7 @@ describe("new BaseK(ds) where ds is standard base-2-36 digits", function () {
     }
   });
 
-  it("decodes encoded text symmetrically case-insensitively", function () {
+  it("decodes encoded text symmetrically (case-insensitive)", function () {
     for (let i = 2; i <= 36; i++) {
       for (let j = 0; j < cases.length; j++) {
         const actual = engines[i].decode(encodedCases[i][j].toUpperCase());
@@ -76,6 +76,18 @@ describe("new BaseK(ds) where ds is standard base-2-36 digits", function () {
         const diff = actual.length === cases[j].length ? 0 : 1;
         for (let k = 0; k < cases[j].length; k++) {
           assert(actual[k + diff] === cases[j][k]);
+        }
+      }
+    }
+  });
+
+  it("decodes encoded text symmetrically (with outSize argument)", function () {
+    for (let i = 2; i <= 36; i++) {
+      for (let j = 0; j < cases.length; j++) {
+        const actual = engines[i].decode(encodedCases[i][j], cases[j].length);
+        assert(actual.length === cases[j].length);
+        for (let k = 0; k < cases[j].length; k++) {
+          assert(actual[k] === cases[j][k]);
         }
       }
     }

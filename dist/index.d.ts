@@ -8,7 +8,7 @@ export declare class BaseK {
     /** Creates an encoder-decoder object from a digit set. */
     constructor(digits: string, caseInsensitiveDecoder?: boolean);
     /** Encodes a byte array to text. */
-    encode(bytes: Uint8Array): string;
+    encode(bytes: Uint8Array, outSize?: number): string;
     /** Decodes text to a byte array. */
-    decode(text: string): Uint8Array;
+    decode(text: string, outSize?: number): Uint8Array;
 }

@@ -37,8 +37,8 @@ export class BaseK {
         }
     }
     /** Encodes a byte array to text. */
-    encode(bytes) {
-        const outSize = Math.ceil(bytes.length * this.log2Ratio);
+    encode(bytes, outSize) {
+        outSize !== null && outSize !== void 0 ? outSize : (outSize = Math.ceil(bytes.length * this.log2Ratio));
         const out = convertRadix(bytes, 256, this.digits.length, outSize);
         let text = "";
         for (let e of out) {
@@ -47,9 +47,9 @@ export class BaseK {
         return text;
     }
     /** Decodes text to a byte array. */
-    decode(text) {
+    decode(text, outSize) {
         var _a;
-        const outSize = Math.ceil(text.length / this.log2Ratio);
+        outSize !== null && outSize !== void 0 ? outSize : (outSize = Math.ceil(text.length / this.log2Ratio));
         const src = new Uint8Array(text.length);
         for (let i = 0; i < text.length; i++) {
             const c = (_a = this.decodeMap[text.charCodeAt(i)]) !== null && _a !== void 0 ? _a : 0xff;
