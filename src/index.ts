@@ -3,8 +3,8 @@ export class BaseK {
   /** Number of digits (a.k.a. base). */
   private readonly radix: number;
 
-  /** `Math.log2(this.radix)` used to determine the size of output. */
-  private readonly log2Radix: number;
+  /** `log2(256) / log2(radix)` used to determine the size of output. */
+  private readonly log2Ratio: number;
 
   /** O(1) map from ASCII code points to digit values. */
   private readonly decodeMap: Uint8Array;
@@ -12,7 +12,7 @@ export class BaseK {
   /** Creates an encoder-decoder object from a digit set. */
   constructor(private readonly digits: string, caseInsensitiveDecoder = false) {
     this.radix = digits.length;
-    this.log2Radix = Math.log2(this.radix);
+    this.log2Ratio = Math.log2(256) / Math.log2(this.radix);
 
     if (this.radix < 2 || this.radix > 128) {
       throw new RangeError("number of digits too small or large");
@@ -47,7 +47,7 @@ export class BaseK {
 
   /** Encodes a byte array to text. */
   encode(bytes: Uint8Array): string {
-    const outSize = Math.ceil((bytes.length * 8) / this.log2Radix);
+    const outSize = Math.ceil(bytes.length * this.log2Ratio);
     const out = new Uint8Array(outSize);
     for (let i = 0; i < bytes.length; ) {
       // Reset carry to input (read multiple bytes for optimization)
@@ -79,7 +79,7 @@ export class BaseK {
 
   /** Decodes text to a byte array. */
   decode(text: string): Uint8Array {
-    const outSize = Math.ceil((text.length / 8) * this.log2Radix);
+    const outSize = Math.ceil(text.length / this.log2Ratio);
     const out = new Uint8Array(outSize);
     for (let i = 0; i < text.length; ) {
       // Reset carry to input (read multiple digits for optimization)

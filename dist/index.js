@@ -4,7 +4,7 @@ export class BaseK {
     constructor(digits, caseInsensitiveDecoder = false) {
         this.digits = digits;
         this.radix = digits.length;
-        this.log2Radix = Math.log2(this.radix);
+        this.log2Ratio = Math.log2(256) / Math.log2(this.radix);
         if (this.radix < 2 || this.radix > 128) {
             throw new RangeError("number of digits too small or large");
         }
@@ -38,7 +38,7 @@ export class BaseK {
     }
     /** Encodes a byte array to text. */
     encode(bytes) {
-        const outSize = Math.ceil((bytes.length * 8) / this.log2Radix);
+        const outSize = Math.ceil(bytes.length * this.log2Ratio);
         const out = new Uint8Array(outSize);
         for (let i = 0; i < bytes.length;) {
             // Reset carry to input (read multiple bytes for optimization)
@@ -67,7 +67,7 @@ export class BaseK {
     /** Decodes text to a byte array. */
     decode(text) {
         var _a;
-        const outSize = Math.ceil((text.length / 8) * this.log2Radix);
+        const outSize = Math.ceil(text.length / this.log2Ratio);
         const out = new Uint8Array(outSize);
         for (let i = 0; i < text.length;) {
             // Reset carry to input (read multiple digits for optimization)
