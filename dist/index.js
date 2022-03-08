@@ -64,22 +64,26 @@ export class BaseK {
 /** Converts a digit value array in `srcRadix` to that in `dstRadix`. */
 const convertRadix = (src, srcRadix, dstRadix, outSize) => {
     const dst = new Uint8Array(outSize);
-    for (let i = 0; i < src.length;) {
+    let dstUsed = dst.length - 1;
+    for (let i = 0, carry = 0; i < src.length;) {
         // Reset carry to input (read multiple digits for optimization)
-        let carry = 0;
-        let term = 1; // Set to srcRadix ** number of read digits
-        while (term < 4294967296 && i < src.length) {
+        let power = 1; // Set to srcRadix ** number of digits read
+        while (power < 2 ** 36 && i < src.length) {
             carry = carry * srcRadix + src[i++];
-            term *= srcRadix;
+            power *= srcRadix;
         }
-        for (let j = dst.length - 1; j >= 0; j--) {
-            carry += dst[j] * term;
+        // Iterate over dst from right while carry != 0 or up to place already used
+        let j = dst.length - 1;
+        for (; carry > 0 || j >= dstUsed; j--) {
+            if (j < 0) {
+                throw new RangeError("outSize too small");
+            }
+            carry += dst[j] * power;
             dst[j] = carry % dstRadix;
             carry = Math.trunc(carry / dstRadix);
         }
-        if (carry !== 0) {
-            throw new RangeError("outSize too small");
-        }
+        dstUsed = j + 1;
+        // assert(carry === 0 && dstUsed >= 0);
     }
     return dst;
 };
