@@ -49,7 +49,7 @@ export class BaseK {
 
     let text = "";
     for (let e of out) {
-      text += this.digits[e];
+      text += this.digits.charAt(e);
     }
     return text;
   }
@@ -76,15 +76,17 @@ const convertRadix = (
   dstRadix: number,
   outSize: number
 ): Uint8Array => {
+  const maxPower = Number.MAX_SAFE_INTEGER / (srcRadix * dstRadix);
   const dst = new Uint8Array(outSize);
   let dstUsed = dst.length - 1;
   for (let i = 0, carry = 0; i < src.length; ) {
     // Reset carry to input (read multiple digits for optimization)
     let power = 1; // Set to srcRadix ** number of digits read
-    while (power < 2 ** 36 && i < src.length) {
+    while (power < maxPower && i < src.length) {
       carry = carry * srcRadix + src[i++];
       power *= srcRadix;
     }
+    // console.assert(power * dstRadix <= Number.MAX_SAFE_INTEGER);
 
     // Iterate over dst from right while carry != 0 or up to place already used
     let j = dst.length - 1;
@@ -93,11 +95,12 @@ const convertRadix = (
         throw new RangeError("outSize too small");
       }
       carry += dst[j] * power;
-      dst[j] = carry % dstRadix;
-      carry = Math.trunc(carry / dstRadix);
+      const quo = Math.trunc(carry / dstRadix);
+      dst[j] = carry - quo * dstRadix; // remainder
+      carry = quo;
     }
     dstUsed = j + 1;
-    // assert(carry === 0 && dstUsed >= 0);
+    // console.assert(carry === 0 && dstUsed >= 0);
   }
   return dst;
 };
