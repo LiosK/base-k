@@ -65,7 +65,7 @@ export class BaseK {
 const convertRadix = (src, srcRadix, dstRadix, outSize) => {
     const maxPower = Number.MAX_SAFE_INTEGER / (srcRadix * dstRadix);
     const dst = new Uint8Array(outSize);
-    let dstUsed = dst.length - 1;
+    let minIndex = outSize;
     for (let i = 0, carry = 0; i < src.length;) {
         // Reset carry to input (read multiple digits for optimization)
         let power = 1; // Set to srcRadix ** number of digits read
@@ -74,9 +74,10 @@ const convertRadix = (src, srcRadix, dstRadix, outSize) => {
             power *= srcRadix;
         }
         // console.assert(power * dstRadix <= Number.MAX_SAFE_INTEGER);
-        // Iterate over dst from right while carry != 0 or up to place already used
+        // Iterate over dst from right to left while carry != 0 but at least up to
+        // place already filled
         let j = dst.length - 1;
-        for (; carry > 0 || j >= dstUsed; j--) {
+        for (; carry > 0 || j > minIndex; j--) {
             if (j < 0) {
                 throw new RangeError("outSize too small");
             }
@@ -85,8 +86,8 @@ const convertRadix = (src, srcRadix, dstRadix, outSize) => {
             dst[j] = carry - quo * dstRadix; // remainder
             carry = quo;
         }
-        dstUsed = j + 1;
-        // console.assert(carry === 0 && dstUsed >= 0);
+        minIndex = j;
+        // console.assert(carry === 0 && minIndex >= -1);
     }
     return dst;
 };
