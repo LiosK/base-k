@@ -1,4 +1,4 @@
-import { BaseK } from "base-k";
+import { BaseK } from "../dist/index.js";
 const assert = (expression, message = "") => {
   if (!expression) {
     throw new Error("Assertion failed" + (message ? ": " + message : ""));
