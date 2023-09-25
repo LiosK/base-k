@@ -7,7 +7,10 @@ export class BaseK {
   private readonly decodeMap: Uint8Array;
 
   /** Creates an encoder-decoder object from a digit set. */
-  constructor(private readonly digits: string, caseInsensitiveDecoder = false) {
+  constructor(
+    private readonly digits: string,
+    caseInsensitiveDecoder = false,
+  ) {
     const radix = digits.length;
     if (radix < 2 || radix > 128) {
       throw new RangeError("number of digits too small or large");
@@ -74,7 +77,7 @@ const convertRadix = (
   src: Uint8Array,
   srcRadix: number,
   dstRadix: number,
-  outSize: number
+  outSize: number,
 ): Uint8Array => {
   const maxPower = Number.MAX_SAFE_INTEGER / (srcRadix * dstRadix);
   const dst = new Uint8Array(outSize);

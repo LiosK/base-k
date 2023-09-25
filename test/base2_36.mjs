@@ -55,7 +55,7 @@ describe("new BaseK(ds) where ds is standard base-2-36 digits", function () {
         const actual = engines[i].decode(encodedCases[i][j]);
         assert(
           actual.length === cases[j].length ||
-            (actual.length === cases[j].length + 1 && actual[0] === 0)
+            (actual.length === cases[j].length + 1 && actual[0] === 0),
         );
         const diff = actual.length === cases[j].length ? 0 : 1;
         for (let k = 0; k < cases[j].length; k++) {
@@ -71,7 +71,7 @@ describe("new BaseK(ds) where ds is standard base-2-36 digits", function () {
         const actual = engines[i].decode(encodedCases[i][j].toUpperCase());
         assert(
           actual.length === cases[j].length ||
-            (actual.length === cases[j].length + 1 && actual[0] === 0)
+            (actual.length === cases[j].length + 1 && actual[0] === 0),
         );
         const diff = actual.length === cases[j].length ? 0 : 1;
         for (let k = 0; k < cases[j].length; k++) {
