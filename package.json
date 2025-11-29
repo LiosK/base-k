@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/LiosK/base-k#readme",
   "devDependencies": {
-    "mocha": "^10.4.0",
-    "typescript": "^5.4.5"
+    "mocha": "^11.7.5",
+    "typescript": "^5.9.3"
   }
 }
