@@ -82,7 +82,7 @@ const convertRadix = (
   const maxPower = Number.MAX_SAFE_INTEGER / (srcRadix * dstRadix);
   const dst = new Uint8Array(outSize);
   let minIndex = outSize;
-  for (let i = 0, carry = 0; i < src.length; ) {
+  for (let i = 0, carry = 0; i < src.length;) {
     // Reset carry to input (read multiple digits for optimization)
     let power = 1; // Set to srcRadix ** number of digits read
     while (power < maxPower && i < src.length) {
